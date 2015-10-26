@@ -1,0 +1,4 @@
+*.pyc
+sampledata/ActiGraph/*_sojourns.csv
+sampledata/ActiGraph/*_sojourns_processed.csv
+sampledata/ActiGraph/*\ awake\ ranges.csv
