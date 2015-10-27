@@ -49,9 +49,55 @@ def parse_options():
     description = dedent("""
     Display activity monitor data in an attractive format.
 
-    If a path to the subject's directory is given as the final argument,
-    %prog will search there for files to display, so that the --*-path
-    options will not be necessary.
+    Display each type of data differently:
+
+    - ActiGraph data integrated to 1-second epochs are displayed as a line
+      plot of the counts along each axis.
+
+      The blue line represents the first (vertical) axis, the green line the
+      second (anterior-posterior) axis, and the red line the third (medial-
+      lateral) axis.
+
+    - ActiGraph data integrated to 60-second epochs are classified according
+      to the modified (Freedson 1998) cut points used by the ActiLife
+      software and displayed as bars color coded by estimated intensity.
+
+      The colors correspond to estimated intensities as follows:
+      * Dark blue:    non-wear
+      * Blue:         sedentary
+      * Light yellow: light
+      * Yellow:       lifestyle
+      * Orange:       moderate
+      * Red:          vigorous
+
+    - Sojourns/SIP data are displayed as bars color coded by estimated
+      intensity.
+
+      The colors are as above, with additional colors as follows:
+      * Green:        standing
+      * Cyan:         seated, but light (in practice, this tends to indicate
+                      activities like recumbent biking, the intensities of
+                      which are typically underestimated)
+      * Black:        Sojourns estimated negative intensity for this bout
+                      (this is an inherent problem with the method but can
+                      only happen when Sojourns has already classified a
+                      bout as active; such bouts are typically moderate or
+                      vigorous)
+
+    - activPAL Events data are displayed as bars color coded by whether the
+      subject was sitting, standing or stepping.
+
+      Here sitting is blue, standing green, and stepping red.
+
+    Files are selected in the same way as in sip.py; for more detail, see
+    the help for that playing. The exception to this is that this program
+    will select as many files as it can find rather than ending its search
+    when it finds an appropriate file (but files with names ending in "_QC"
+    will still shadow files with identical names that are missing this
+    suffix).
+
+    If you wish to exclude a particular file from being plotted, you can
+    pass it to the `--exclude` option.
 
     """)
     epilog = dedent("""
@@ -74,8 +120,8 @@ def parse_options():
                       help='Flag to ignore "awake ranges" file')
     parser.add_option('--no-raw-counts', action='store_true',
                       help="Don't plot raw counts (for speed reasons)")
-    parser.add_option('-x', '--exclude', type='path', action='callback',
-                      nargs=0, default=set(), callback=exclude_callback,
+    parser.add_option('-x', '--exclude', type='path', action='append',
+                      default=[],
                       help="Don't plot the data in this file")
     (opts, args) = parser.parse_args()
     if args:
@@ -98,6 +144,7 @@ def parse_options():
 
 if __name__ == '__main__':
     opts = parse_options()
+    exclude = set(exclude)
     # FIXME
     if opts.no_raw_counts:
         SojournsData.plot = SojournsData.plot_activities
@@ -116,11 +163,7 @@ if __name__ == '__main__':
     for ag_path in opts.ag_path:
         if ag_path in opts.exclude:
             continue
-        # FIXME hack
-        ag = (ActiGraphUpdatedDataTable
-              if 'updated' in ag_path.name
-              else ActiGraphDataTable).from_file(ag_path,
-                                                 awake_ranges=awake_ranges)
+        ag = ActiGraphDataTable.from_file(ag_path, awake_ranges=awake_ranges)
         if ag.raw_data.index.freq == Minute():
             ag.process()
         else:

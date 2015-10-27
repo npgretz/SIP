@@ -86,34 +86,14 @@ def patch_optparse():
     Option.TYPES = Option.TYPES + ('path',)
     Option.TYPE_CHECKER['path'] = check_path
 
-@export
-def exclude_callback(option, opt_str, value, parser):
-    value = getattr(parser.values, option.dest)
-
-    i = 0
-    for i, arg in enumerate(parser.rargs):
-        if arg.startswith('-'):
-            break
-        try:
-            val = option.check_value(opt_str, arg)
-        except OptionValueError:
-            break
-        value.add(val)
-
-    del parser.rargs[:i]
-
 tz = 'America/Chicago'
 
-count_bins = [-np.inf, 0, 151, 761, 1953, 5725, np.inf]
+# ActiGraph cut points based on Freedson, 1998
+count_bins = [-np.inf, 0, 100, 760, 1952, 5725, np.inf]
 met_bins = [-np.inf, 0, 1.5, 3, 4.5, 6, np.inf]
 activity_labels = 'error standing light adl freedson vigorous'.split()
 ap_mod_activity_labels = ('error sedentary sitting_active adl_apsed '
                           'freedson_apsed vigorous_apsed'.split())
-actiparse_updated_labels = [('standing', count_bins[2]+0.5),
-                            ('sitting_active', count_bins[2]-0.5)] + \
-                           [(act, min_counts+0.5) for act, min_counts
-                                in zip(ap_mod_activity_labels[3:],
-                                       count_bins[3:-1])]
 
 WEEKDAYS = np.array('Mon Tue Wed Thu Fri Sat Sun'.split())
 dtfmt = '%a, %d %b %Y %H:%M:%S %Z %z'
@@ -608,32 +588,6 @@ class ActiGraphDataTable(ActiGraphData):
                     '*%dsecDataTable_QC.*' % (e.nanos / 1e9),
                     '*%dsecDataTable.csv' % (e.nanos / 1e9),
                     '*%dsecDataTable.*' % (e.nanos / 1e9)]]
-
-@export
-class ActiGraphUpdatedDataTable(ActiGraphDataTable):
-    """
-    ActiGraph data, updated using activPAL data.
-
-    """
-
-    def compute_activity_levels(self):
-        activity_level, sedentary = \
-            super(ActiGraphUpdatedDataTable, self).compute_activity_levels()
-        for act, counts in actiparse_updated_labels:
-            activity_level[self.data['Axis1'] == counts] = act
-        sedentary[:-1] = boolify(activity_level[:-1] == 'sedentary')
-        return activity_level, sedentary
-
-    @staticmethod
-    def search_path():
-        return ['ActiGraph/*60secDataTable_QC_updated.csv',
-                'ActiGraph/*60secDataTable_QC_updated.*',
-                'ActiGraph/*60secDataTable_updated.csv',
-                'ActiGraph/*60secDataTable_updated.*',
-                '*60secDataTable_QC_updated.csv',
-                '*60secDataTable_QC_updated.*',
-                '*60secDataTable_updated.csv',
-                '*60secDataTable_updated.*']
 
 @export
 class ActivPALData(ActivityMonitorData):
