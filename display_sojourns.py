@@ -160,7 +160,7 @@ def parse_options():
 
 if __name__ == '__main__':
     opts = parse_options()
-    exclude = set(exclude)
+    opts.exclude = set(opts.exclude)
     # FIXME
     if opts.no_raw_counts:
         SojournsData.plot = SojournsData.plot_activities
