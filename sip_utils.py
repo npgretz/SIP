@@ -22,10 +22,12 @@ import itertools as it
 import functools as ft
 import operator as op
 import subprocess as sp
+import pathlib
 import collections
 
 import numpy as np
 import pandas as pd
+import tzlocal
 
 from pandas.tseries.offsets import Day, Minute
 from pandas.tseries.frequencies import to_offset
@@ -86,7 +88,7 @@ def unique_everseen(iterable, key=None):
                 seen_add(k)
                 yield element
 
-tz = 'America/Chicago'
+tz = tzlocal.get_localzone()
 
 # ActiGraph cut points based on Freedson, 1998
 count_bins = [-np.inf, 0, 100, 760, 1952, 5725, np.inf]
@@ -583,7 +585,7 @@ class ActiGraphDataTable(ActiGraphData):
                     'ActiGraph/*%dsecDataTable_QC.csv' % (e.nanos / 1e9),
                     'ActiGraph/*%dsecDataTable.csv' % (e.nanos / 1e9),
                     '*%dsecDataTable_QC.csv' % (e.nanos / 1e9),
-                    '*%dsecDataTable.csv' % (e.nanos / 1e9),
+                    '*%dsecDataTable.csv' % (e.nanos / 1e9)]]
 
 @export
 class ActivPALData(ActivityMonitorData):

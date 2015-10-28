@@ -40,6 +40,7 @@ or homebrew, so you'll also need to install this pile of dependencies:
   - numpy
   - pandas
   - pathlib
+  - tzlocal
 - R (works on 3.2.2; probably not hugely sensitive to version)
 - R libraries:
   - nnet

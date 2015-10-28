@@ -375,11 +375,12 @@ def parse_arguments():
     parser.add_argument('--ignore-awake-ranges', action='store_true',
                         help='ignore an existing "awake ranges" file and '
                              'estimate wear time anyway')
-    parser.add_argument('--tz', default=util.tz,
+    parser.add_argument('--tz',
                         help='interpret data as being collected in this time '
-                             'zone instead of %(default)r')
+                             'zone instead of %r' % util.tz.zone)
     args = parser.parse_args()
-    util.tz = args.tz
+    if args.tz is not None:
+        util.tz = args.tz
     if args.subjdir is not None:
         if not args.subj:
             args.subj = args.subjdir.resolve().parts[-1]

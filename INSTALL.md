@@ -51,7 +51,7 @@ outdated or otherwise slightly off-kilter python. Start with this:
 which installs not only python but also the python sort-of-package-manager pip.
 Follow up with
 
-    pip install pathlib numpy matplotlib nose pandas
+    pip install pathlib numpy matplotlib nose pandas tzlocal
 
 to install all of the python packages you'll need.
 
@@ -177,8 +177,8 @@ embedded in their licenses (which is why I didn't use them in the first place).
 
 You will need to make sure that you install Python 2.7, preferably 2.7.9+.
 (Python 3 is a slightly different language and sojourns won't work with it
-right now.) Install the most recent versions of pathlib, numpy and matplotlib,
-and version 0.14.1 of pandas.
+right now.) Install the most recent versions of pathlib, numpy, matplotlib,
+pandas and tzlocal.
 
 [scipy-install]: http://www.scipy.org/install.html
 
@@ -189,9 +189,10 @@ Download [Python 2.7.10][], as well as [nose][nose-win],
 [pathlib][pathlib-win], [numpy-MKL][numpy-MKL-win],
 [python-dateutil][dateutil-win], [six][six-win], [pytz][pytz-win],
 [setuptools][setuptools-win], [pyparsing][pyparsing-win],
-[matplotlib][matplotlib-win], and [pandas][pandas-win], making sure each
-time to get the `py2.7` version compatible with your computer (`win32` if it's
-32-bit; `win-amd64` if it's 64).
+[matplotlib][matplotlib-win], [pandas][pandas-win] and [tzlocal][], making sure
+each time to get the `py2.7` version compatible with your computer (`win32` if
+it's 32-bit; `win-amd64` if it's 64). (Note that tzlocal is pure python, so it
+doesn't need to be pre-built.)
 
 You will need to set up your PATH, which is similar in concept to what you have
 to do on OS X, but completely different in execution.
@@ -208,6 +209,7 @@ to do on OS X, but completely different in execution.
 [pyparsing-win]: http://www.lfd.uci.edu/~gohlke/pythonlibs/#pyparsing
 [matplotlib-win]: http://www.lfd.uci.edu/~gohlke/pythonlibs/#matplotlib
 [pandas-win]: http://www.lfd.uci.edu/~gohlke/pythonlibs/#pandas
+[tzlocal]: https://pypi.python.org/pypi/tzlocal
 
 #### Use pip ####
 
@@ -220,7 +222,7 @@ python extensions. If you download it and [Python 2.7.10][], you can
 try to proceed with the python installation as described in the Mac OS X
 section with this command:
 
-    pip install pathlib numpy matplotlib nose pandas
+    pip install pathlib numpy matplotlib nose pandas tzlocal
 
 Unfortunately, pip doesn't handle non-python dependencies, so you may find
 yourself in the awkward position of having to track down the same kinds of bits

@@ -147,11 +147,12 @@ def parse_arguments():
                         help="don't plot raw counts (for speed reasons)")
     parser.add_argument('-x', '--exclude', type=pathlib.Path, action='append',
                         help="don't plot the data in this file")
-    parser.add_argument('--tz', default=util.tz,
+    parser.add_argument('--tz',
                         help='interpret data as being collected in this time '
-                             'zone instead of %(default)r')
+                             'zone instead of %r' % util.tz.zone)
     args = parser.parse_args()
-    util.tz = args.tz
+    if args.tz is not None:
+        util.tz = args.tz
     if args.subjdir is not None:
         if not args.ag_path:
             args.ag_path = filter(
