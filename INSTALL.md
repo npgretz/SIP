@@ -22,7 +22,7 @@ Now click on the Terminal icon to open a terminal.
 ### Step 1: Homebrew ###
 
 First, install Homebrew. For this install only, you will need to be logged in
-as an administrator. At the bottom of the [Homebrew home page](http://brew.sh)
+as an administrator. At the bottom of the [Homebrew home page][]
 there is a section on installing Homebrew that tells you to paste a command
 into the terminal prompt. Currently, that command is this:
 
@@ -38,6 +38,8 @@ Once it's done installing, run
     brew doctor
 
 and observe that "Your system is ready to brew."
+
+[Homebrew home page]: http://brew.sh
 
 ### Step 2: Python ###
 
@@ -56,7 +58,7 @@ to install all of the python packages you'll need.
 ### Step 3: R ###
 
 To install R, you first need to install XQuartz, since Apple no longer packages
-X11 with OS X. Go to the [XQuartz home page](http://xquartz.macosforge.org) and
+X11 with OS X. Go to the [XQuartz home page][] and
 download and run the installer. Give it your administrator password again, and
 after it's done let it log you out and back in.
 
@@ -72,6 +74,8 @@ To install the necessary packages, fire up R:
     install.packages("zoo")
     install.packages("nnet")
     q()
+
+[XQuartz home page]: http://xquartz.macosforge.org
 
 ### Step 4: SIP ###
 
@@ -144,16 +148,18 @@ based on guessing and internet research. Following these directions will almost
 certainly not go smoothly and will require a lot of figuring things out
 yourself.
 
-The easiest way *might* be to just cut the Gordian knot and install
-[Cygwin](https://www.cygwin.com/). This will give you a UNIX-like environment
-to play in on your Windows machine. Just install everything as in the OS X
-install, but use Cygwin for any of the steps involving brew or other Mac-
-specific tools. The only reason I don't just heartily endorse this plan is that
-without brew I have no idea how much tracking down of extra bits you will have
-to do. This might be the easiest way, or you might end up hunting for a FORTRAN
-compiler in a seedy internet back alley. You really won't know until you try.
+The easiest way *might* be to just cut the Gordian knot and install [Cygwin][].
+This will give you a UNIX-like environment to play in on your Windows machine.
+Just install everything as in the OS X install, but use Cygwin for any of the
+steps involving brew or other Mac-specific tools. The only reason I don't just
+heartily endorse this plan is that without brew I have no idea how much
+tracking down of extra bits you will have to do. This might be the easiest way,
+or you might end up hunting for a FORTRAN compiler in a seedy internet back
+alley. You really won't know until you try.
 
 If Cygwin doesn't work for you, here's what you'll need:
+
+[Cygwin]: https://www.cygwin.com/
 
 ### Step 1: Python ###
 
@@ -164,37 +170,44 @@ options:
 
 #### Use a prepackaged distribution ####
 
-The SciPy project's [installation guide](http://www.scipy.org/install.html)
-suggests using a prepackaged distribution to install everything you need. If
-you go this route, be aware that some of these packages have very specific
-citation requirements embedded in their licenses (which is why I didn't use
-them in the first place).
+The SciPy project's [installation guide][scipy-install] suggests using a
+prepackaged distribution to install everything you need. If you go this route,
+be aware that some of these packages have very specific citation requirements
+embedded in their licenses (which is why I didn't use them in the first place).
 
 You will need to make sure that you install Python 2.7, preferably 2.7.9+.
 (Python 3 is a slightly different language and sojourns won't work with it
 right now.) Install the most recent versions of pathlib, numpy and matplotlib,
 and version 0.14.1 of pandas.
 
+[scipy-install]: http://www.scipy.org/install.html
+
 #### Use Christoph Gohlke's pre-built packages ####
 
-A good unofficial source for pre-built Windows packages is
-[here](http://www.lfd.uci.edu/~gohlke/pythonlibs/). Download
-[Python 2.7.10](https://www.python.org/downloads/release/python-2710/), as well
-as [nose](http://www.lfd.uci.edu/~gohlke/pythonlibs/#nose),
-[pathlib](http://www.lfd.uci.edu/~gohlke/pythonlibs/#backports),
-[numpy-MKL](http://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy),
-[python-dateutil](http://www.lfd.uci.edu/~gohlke/pythonlibs/#python-dateutil),
-[six](http://www.lfd.uci.edu/~gohlke/pythonlibs/#six),
-[pytz](http://www.lfd.uci.edu/~gohlke/pythonlibs/#pytz),
-[setuptools](http://www.lfd.uci.edu/~gohlke/pythonlibs/#setuptools),
-[pyparsing](http://www.lfd.uci.edu/~gohlke/pythonlibs/#pyparsing),
-[matplotlib](http://www.lfd.uci.edu/~gohlke/pythonlibs/#matplotlib), and
-[pandas](http://www.lfd.uci.edu/~gohlke/pythonlibs/#pandas), making sure each
+A good unofficial source for pre-built Windows packages is [here][gohlke].
+Download [Python 2.7.10][], as well as [nose][nose-win],
+[pathlib][pathlib-win], [numpy-MKL][numpy-MKL-win],
+[python-dateutil][dateutil-win], [six][six-win], [pytz][pytz-win],
+[setuptools][setuptools-win], [pyparsing][pyparsing-win],
+[matplotlib][matplotlib-win], and [pandas][pandas-win], making sure each
 time to get the `py2.7` version compatible with your computer (`win32` if it's
 32-bit; `win-amd64` if it's 64).
 
 You will need to set up your PATH, which is similar in concept to what you have
 to do on OS X, but completely different in execution.
+
+[gohlke]: http://www.lfd.uci.edu/~gohlke/pythonlibs/
+[Python 2.7.10]: https://www.python.org/downloads/release/python-2710/
+[nose-win]: http://www.lfd.uci.edu/~gohlke/pythonlibs/#nose
+[pathlib-win]: http://www.lfd.uci.edu/~gohlke/pythonlibs/#backports
+[numpy-MKL-win]: http://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy
+[dateutil-win]: http://www.lfd.uci.edu/~gohlke/pythonlibs/#python-dateutil
+[six-win]: http://www.lfd.uci.edu/~gohlke/pythonlibs/#six
+[pytz-win]: http://www.lfd.uci.edu/~gohlke/pythonlibs/#pytz
+[setuptools-win]: http://www.lfd.uci.edu/~gohlke/pythonlibs/#setuptools
+[pyparsing-win]: http://www.lfd.uci.edu/~gohlke/pythonlibs/#pyparsing
+[matplotlib-win]: http://www.lfd.uci.edu/~gohlke/pythonlibs/#matplotlib
+[pandas-win]: http://www.lfd.uci.edu/~gohlke/pythonlibs/#pandas
 
 #### Use pip ####
 
@@ -202,9 +215,8 @@ The advantage of pip is that it knows how to fetch all of a project's python
 dependencies; the downside is that many projects don't expose pre-built
 versions in the Python Package Index, so it has to compile things from source.
 
-Microsoft recently released a [free compiler](http://aka.ms/vcpython27) for
-building python extensions. If you download it and
-[Python 2.7.10](https://www.python.org/downloads/release/python-2710/), you can
+Microsoft recently released a [free compiler][python27-msvc] for building
+python extensions. If you download it and [Python 2.7.10][], you can
 try to proceed with the python installation as described in the Mac OS X
 section with this command:
 
@@ -220,35 +232,40 @@ pip correspondingly more useful on Windows, but at this point if this way
 doesn't just work, I'd recommend abandoning it and trying one of the other
 paths.
 
+[python27-msvc]: http://aka.ms/vcpython27
+
 ### Step 2: R ###
 
-Download and install
-[R for Windows](http://cran.r-project.org/bin/windows/base/), then open R and
-run this:
+Download and install [R for Windows][], then open R and run this:
 
     install.packages("zoo")
     install.packages("nnet")
     q()
 
+[R for Windows]: http://cran.r-project.org/bin/windows/base/
+
 ### Step 3: SIP ###
 
-It's probably easiest to just download a zip archive of SIP from
-[here](https://www.github.com/ischwabacher/SIP/archive/master.zip). Unzip the
-archive and add it to your PATH. Again, I don't know how to edit the PATH on
-Windows, and this is something that should be done by someone who does.
+It's probably easiest to just download a zip archive of SIP from [here][SIP].
+Unzip the archive and add it to your PATH. Again, I don't know how to edit the
+PATH on Windows, and this is something that should be done by someone who does.
+
+[SIP]: https://www.github.com/ischwabacher/SIP/archive/master.zip
 
 ### Step 4: Test it ###
 
-Open a
-[Command Prompt](http://windows.microsoft.com/en-us/windows/command-prompt-faq)
-(cmd.exe) and do the same things you would do on OS X.
+Open a [Command Prompt][] (cmd.exe) and do the same things you would do on OS
+X.
 
 Because the Windows command prompt is different from the bash shell, you will
-need to learn how to use it. Here's an [intro](http://dosprompt.info/), and
-here's the
-[documentation](http://technet.microsoft.com/en-us/library/cc754340.aspx). Keep
-in mind that quoting rules are
-[different](http://msdn.microsoft.com/en-us/library/a1y7w461.aspx).
+need to learn how to use it. Here's an [intro][command-prompt-intro], and
+here's the [documentation][command-prompt-doc]. Keep in mind that quoting rules
+are [different][command-prompt-quoting].
+
+[Command Prompt]: http://windows.microsoft.com/en-us/windows/command-prompt-faq
+[command-prompt-intro]: http://dosprompt.info/
+[command-prompt-doc]: http://technet.microsoft.com/en-us/library/cc754340.aspx
+[command-prompt-quoting]: http://msdn.microsoft.com/en-us/library/a1y7w461.aspx
 
 Other UNIX-like operating systems
 ---------------------------------
