@@ -20,7 +20,7 @@ from __future__ import print_function
 
 import sys
 import subprocess as sp
-from pathlib import Path
+import pathlib
 import argparse
 import textwrap
 
@@ -29,9 +29,9 @@ import pandas as pd
 
 from pandas.tseries.offsets import Second
 
-from sip_utils import *
+import sip_utils as util
 
-class ActivitySummary(Sniffable):
+class ActivitySummary(util.Sniffable):
     def __init__(self, data):
         self.data = data
 
@@ -42,27 +42,27 @@ class ActivitySummary(Sniffable):
     def from_sojourns(cls, sojourns, subj):
         # FIXME this whole method is horrifying
         durs = range(10, 61, 10)
-        day_idx = days(sojourns.raw_data.index)
+        day_idx = util.days(sojourns.raw_data.index)
         # FIXME does this still work if we pass in the index?
         out = cls.prepare_output().reindex(index=day_idx[:-1])
         out_cols = set(out.columns)
 
         out['subject'] = subj
-        out['day'] = WEEKDAYS[out.index.weekday]
+        out['day'] = util.WEEKDAYS[out.index.weekday]
         out['sleep_ranges'] = map(sleep_ranges,
-                                  slice_data(sojourns.data, day_idx))
+                                  util.slice_data(sojourns.data, day_idx))
         out['total_counts'] = [total(day, 'counts') for day in
-                                  slice_data(sojourns.raw_data, day_idx)]
+                                   util.slice_data(sojourns.raw_data, day_idx)]
         if 'steps' in sojourns.raw_data.columns:
             out['AG_steps'] = [total(day, 'steps') for day in
-                                   slice_data(sojourns.raw_data, day_idx)]
+                                   util.slice_data(sojourns.raw_data, day_idx)]
         if 'AP.steps' in sojourns.raw_data.columns:
             out['AP_steps'] = [2*total(day, 'AP.steps') for day in
-                                   slice_data(sojourns.raw_data, day_idx)]
-        for classifier in classifiers:
-            grouped = group_by_classifier(sojourns.data, classifier)
-            sliced = slice_data(grouped, day_idx)
-            hours = clock_hours(grouped.index)
+                                   util.slice_data(sojourns.raw_data, day_idx)]
+        for classifier in util.classifiers:
+            grouped = util.group_by_classifier(sojourns.data, classifier)
+            sliced = util.slice_data(grouped, day_idx)
+            hours = util.clock_hours(grouped.index)
             key = 'min_%s' % classifier.name
             if key in out_cols:
                 out[key] = [delta(day)[day[classifier.cname].notnull()].sum() /
@@ -107,18 +107,18 @@ class ActivitySummary(Sniffable):
                                                     pd.Timedelta(dur, 'm'))] \
                                     .sum() / pd.Timedelta(1, 'm')
                                 for day in sliced]
-            for hh, hour in zip(hours, slice_data(grouped, hours)):
+            for hh, hour in zip(hours, util.slice_data(grouped, hours)):
                 # unlike sliced, hour can be empty
                 key = '%s_circadian_%d' % (classifier.name, hh.hour)
                 if key in out_cols:
-                    out.ix[pd.Timestamp(hh.date(), tz=tz),key] = \
+                    out.ix[pd.Timestamp(hh.date(), tz=util.tz),key] = \
                         delta(hour)[hour[classifier.cname].notnull()].sum() / \
                             pd.Timedelta(1, 'm')
                 for dur in durs:
                     key = '%s_circadian_%d_length_%d' % (classifier.name,
                                                          hh.hour, dur)
                     if key in out_cols:
-                        out.ix[pd.Timestamp(hh.date(), tz=tz),key] = \
+                        out.ix[pd.Timestamp(hh.date(), tz=util.tz),key] = \
                             delta(hour)[hour[classifier.cname].notnull() &
                                            (hour['bout_Dur'] >=
                                                 pd.Timedelta(dur, 'm'))
@@ -193,7 +193,7 @@ def create_sojourns(ag_path, ap_path=None, soj_path=None):
 
     """
     # PERF: Currently, this is the #1 time sink.
-    patch_subprocess()
+    util.patch_subprocess()
     if not soj_path:
         soj_path = ag_path.with_name(ag_path.stem +
                                      ('_with_activpal' if ap_path else '') +
@@ -203,6 +203,7 @@ def create_sojourns(ag_path, ap_path=None, soj_path=None):
     # string is safe and correct.  This is currently true for python2 but not
     # python3.
     # FIXME: %r was cool until it meant explicitly calling str() on the paths
+    sip_dir = pathlib.Path(__file__).parent
     r_cmds = ("""
               load(paste0(%r, "/nnet3ests.RData"))
               load(paste0(%r, "/cent.1.RData"))
@@ -211,7 +212,7 @@ def create_sojourns(ag_path, ap_path=None, soj_path=None):
               source(paste0(%r, "/sip.functions.R"))
               library(nnet)
               data <- AG.file.reader(%r)
-              """ % ((str(Path(__file__).parent),)*5 + (str(ag_path),)) +
+              """ % ((str(sip_dir),)*5 + (str(ag_path),)) +
              ("""
               ap <- AP.file.reader(%r)
               data <- enhance.actigraph(data,ap)
@@ -227,9 +228,11 @@ def create_sojourns(ag_path, ap_path=None, soj_path=None):
 
 def sleep_ranges(day):
     # FIXME: if DatetimeIndex gets vectorized strftime, use it
-    day = contiguous_apply(day, day['awake'], lambda v, blk:
-                           pd.DataFrame({'t': [blk.index[0].strftime(dtfmt)],
-                                         'awake': [v]}, index=blk.index[[0]]))
+    day = util.contiguous_apply(
+        day,
+        day['awake'],
+        lambda v, blk: pd.DataFrame({'t': [blk.index[0].strftime(util.dtfmt)],
+                                     'awake': [v]}, index=blk.index[[0]]))
     return '[%s]' % '; '.join(
         map('...'.join,
             zip(day.ix[~day['awake'].astype(bool),'t'],
@@ -347,44 +350,48 @@ def parse_arguments():
     parser = argparse.ArgumentParser(
         usage=usage, description=description,
         formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('subjdir', type=Path, nargs='?',
+    parser.add_argument('subjdir', type=pathlib.Path, nargs='?',
                         help='search for subject data in this directory')
     parser.add_argument('-s', '--subject', dest='subj',
                         help='embed this tag as the subject identifier into '
                              'the processed output; the default value is the '
                              'name of the subject directory ("24601" in the '
                              'examples)')
-    parser.add_argument('--ag-path', type=Path,
+    parser.add_argument('--ag-path', type=pathlib.Path,
                         help='get ActiGraph 1secDataTable data from this file')
-    parser.add_argument('--ap-path', type=Path,
+    parser.add_argument('--ap-path', type=pathlib.Path,
                         help='get activPAL Events data from this file')
-    parser.add_argument('--soj-path', type=Path,
+    parser.add_argument('--soj-path', type=pathlib.Path,
                         help='write Sojourns/SIP estimated metabolic activity '
                              "to this file if it doesn't already exist; "
                              'otherwise, read previously computed metabolic '
                              'estimates from this file (to save time)')
-    parser.add_argument('--awake-path', type=Path,
+    parser.add_argument('--awake-path', type=pathlib.Path,
                         help='read wear time intervals from this file if it '
                              'exists; otherwise, estimate wear time and write '
                              'the estimates to this file')
-    parser.add_argument('--soj-intermediate-path', type=Path,
+    parser.add_argument('--soj-intermediate-path', type=pathlib.Path,
                         help=argparse.SUPPRESS)
     parser.add_argument('--ignore-awake-ranges', action='store_true',
                         help='ignore an existing "awake ranges" file and '
                              'estimate wear time anyway')
+    parser.add_argument('--tz', default=util.tz,
+                        help='interpret data as being collected in this time '
+                             'zone instead of %(default)r')
     args = parser.parse_args()
+    util.tz = args.tz
     if args.subjdir is not None:
         if not args.subj:
             args.subj = args.subjdir.resolve().parts[-1]
         if not args.ag_path:
-            args.ag_path = ActiGraphDataTable.sniff(args.subjdir,
-                                                    epoch=Second())
+            args.ag_path = util.ActiGraphDataTable.sniff(args.subjdir,
+                                                         epoch=Second())
         if not args.ap_path:
-            args.ap_path = ActivPALData.sniff(args.subjdir)
+            args.ap_path = util.ActivPALData.sniff(args.subjdir)
         if not args.soj_path:
-            args.soj_path = SojournsData.sniff(args.subjdir)
+            args.soj_path = util.SojournsData.sniff(args.subjdir)
         if not args.awake_path:
-            args.awake_path = AwakeRanges.sniff(args.subjdir)
+            args.awake_path = util.AwakeRanges.sniff(args.subjdir)
     if not args.ag_path and not args.soj_path:
         parser.print_help()
         parser.exit()
@@ -425,19 +432,19 @@ if __name__ == '__main__':
     if not soj_path.exists():
         create_sojourns(ag_path, ap_path, soj_path)
     if awake_path and not ignore_awake_ranges and awake_path.exists():
-        awake_ranges = AwakeRanges.from_file(awake_path)
+        awake_ranges = util.AwakeRanges.from_file(awake_path)
     else:
         awake_ranges = None
-    soj = SojournsData.from_file(soj_path, awake_ranges)
+    soj = util.SojournsData.from_file(soj_path, awake_ranges)
     # XXX HACK
     if 'steps' not in soj.raw_data.columns:
-        ag = ActiGraphDataTable.from_file(ag_path, awake_ranges)
+        ag = util.ActiGraphDataTable.from_file(ag_path, awake_ranges)
         soj.raw_data['steps'] = ag.raw_data['Steps']
     soj.process()
     # FIXME integrate this better
     if args.soj_intermediate_path:
         soj.data.iloc[:-1].to_csv(str(args.soj_intermediate_path))
-        contiguous_apply(
+        util.contiguous_apply(
             soj.data, soj.data['awake'], lambda val, block: pd.DataFrame(
                 {'counts': block['counts'].sum(),
                  'Dur': block['Dur'].sum(),

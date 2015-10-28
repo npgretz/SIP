@@ -21,9 +21,8 @@ import re
 import itertools as it
 import functools as ft
 import operator as op
-from subprocess import Popen, check_call
-from pathlib import Path
-from collections import Iterable
+import subprocess as sp
+import collections
 
 import numpy as np
 import pandas as pd
@@ -49,7 +48,7 @@ def boolify(array, nan=False):
 @export
 # from subprocess32
 def patch_subprocess():
-    if hasattr(Popen, '__exit__'):
+    if hasattr(sp.Popen, '__exit__'):
         return
 
     def _enter_(self):
@@ -64,8 +63,8 @@ def patch_subprocess():
             self.stdin.close()
         self.wait()
 
-    Popen.__enter__ = _enter_
-    Popen.__exit__ = _exit_
+    sp.Popen.__enter__ = _enter_
+    sp.Popen.__exit__ = _exit_
 
 @export
 # from itertools cookbook
@@ -578,17 +577,13 @@ class ActiGraphDataTable(ActiGraphData):
 
     @staticmethod
     def search_path(epoch=Minute()):
-        if not isinstance(epoch, Iterable):
+        if not isinstance(epoch, collections.Iterable):
             epoch = [epoch]
         return [g for e in epoch for g in [
                     'ActiGraph/*%dsecDataTable_QC.csv' % (e.nanos / 1e9),
-                    'ActiGraph/*%dsecDataTable_QC.*' % (e.nanos / 1e9),
                     'ActiGraph/*%dsecDataTable.csv' % (e.nanos / 1e9),
-                    'ActiGraph/*%dsecDataTable.*' % (e.nanos / 1e9),
                     '*%dsecDataTable_QC.csv' % (e.nanos / 1e9),
-                    '*%dsecDataTable_QC.*' % (e.nanos / 1e9),
                     '*%dsecDataTable.csv' % (e.nanos / 1e9),
-                    '*%dsecDataTable.*' % (e.nanos / 1e9)]]
 
 @export
 class ActivPALData(ActivityMonitorData):

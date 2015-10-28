@@ -21,7 +21,7 @@ from __future__ import print_function
 import itertools as it
 import operator as op
 import argparse
-from pathlib import Path
+import pathlib
 import textwrap
 
 import pandas as pd
@@ -30,7 +30,7 @@ import numpy as np
 
 from pandas.tseries.offsets import Minute, Second
 
-from sip_utils import *
+import sip_utils as util
 
 def prepare_axis(dates):
     fig, ax = plt.subplots()
@@ -49,7 +49,8 @@ def prepare_axis(dates):
     return ax
 
 def plot_all_series(data, eps=0.1):
-    dates = reduce(pd.DatetimeIndex.union, [days(d.data.index) for d in data])
+    dates = reduce(pd.DatetimeIndex.union,
+                   [util.days(d.data.index) for d in data])
     ax = prepare_axis(dates)
     n = len(data)
     intervals = np.column_stack([np.linspace(eps-0.5, 0.5-eps, n, False),
@@ -103,6 +104,10 @@ def parse_arguments():
 
       Here sitting is blue, standing green, and stepping red.
 
+    If the graph crosses a time change (for instance, as caused by Daylight
+    Saving Time), data which occurs before the change but on the same day
+    will be shifted to fit.
+
     Files are selected in the same way as in sip.py; for more detail, see
     the help for that playing. The exception to this is that this program
     will select as many files as it can find rather than ending its search
@@ -124,36 +129,46 @@ def parse_arguments():
     parser = argparse.ArgumentParser(
         usage=usage, description=description, epilog=epilog,
         formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('subjdir', type=Path, nargs='?',
+    parser.add_argument('subjdir', type=pathlib.Path, nargs='?',
                         help='search for subject data in this directory')
-    parser.add_argument('--soj-path', type=Path, action='append',
+    parser.add_argument('--soj-path', type=pathlib.Path, action='append',
                         help='get Sojourns/SIP preprocessed Actigraph data '
                              'from this file')
-    parser.add_argument('--ag-path', type=Path, action='append',
+    parser.add_argument('--ag-path', type=pathlib.Path, action='append',
                         help='get Actigraph data from this file')
-    parser.add_argument('--ap-path', type=Path, action='append',
+    parser.add_argument('--ap-path', type=pathlib.Path, action='append',
                         help='get activPAL events data from this file')
-    parser.add_argument('--awake-path', type=Path,
+    parser.add_argument('--awake-path', type=pathlib.Path,
                         help='get wear time intervals from this file in case '
                              'autodetection of non-wear time is poor')
     parser.add_argument('--ignore-awake-ranges', action='store_true',
                         help='ignore "awake ranges" file')
     parser.add_argument('--no-raw-counts', action='store_true',
                         help="don't plot raw counts (for speed reasons)")
-    parser.add_argument('-x', '--exclude', type=Path, action='append',
+    parser.add_argument('-x', '--exclude', type=pathlib.Path, action='append',
                         help="don't plot the data in this file")
+    parser.add_argument('--tz', default=util.tz,
+                        help='interpret data as being collected in this time '
+                             'zone instead of %(default)r')
     args = parser.parse_args()
+    util.tz = args.tz
     if args.subjdir is not None:
         if not args.ag_path:
             args.ag_path = filter(
-                None, [ActiGraphDataTable.sniff(args.subjdir, epoch=Minute()),
-                       ActiGraphDataTable.sniff(args.subjdir, epoch=Second())])
+                None, [util.ActiGraphDataTable.sniff(args.subjdir,
+                                                     epoch=Minute()),
+                       util.ActiGraphDataTable.sniff(args.subjdir,
+                                                     epoch=Second())])
         if not args.ap_path:
-            args.ap_path = filter(None, [ActivPALData.sniff(args.subjdir)])
+            args.ap_path = filter(
+                None, [util.ActivPALData.sniff(args.subjdir)])
         if not args.soj_path:
-            args.soj_path = filter(None, [SojournsData.sniff(args.subjdir)])
+            args.soj_path = filter(
+                None, [util.SojournsData.sniff(args.subjdir)])
         if not args.awake_path:
-            args.awake_path = AwakeRanges.sniff(args.subjdir)
+            args.awake_path = util.AwakeRanges.sniff(args.subjdir)
+    if args.ignore_awake_ranges:
+        args.awake_path = None
     return args
 
 if __name__ == '__main__':
@@ -161,11 +176,11 @@ if __name__ == '__main__':
     args.exclude = set(args.exclude if args.exclude is not None else [])
     # FIXME
     if args.no_raw_counts:
-        SojournsData.plot = SojournsData.plot_activities
+        util.SojournsData.plot = util.SojournsData.plot_activities
 
     data = []
     if args.awake_path and args.awake_path.exists():
-        awake_ranges = AwakeRanges.from_file(args.awake_path)
+        awake_ranges = util.AwakeRanges.from_file(args.awake_path)
     else:
         awake_ranges = None
     # FIXME de-hackify
@@ -177,7 +192,8 @@ if __name__ == '__main__':
     for ag_path in args.ag_path:
         if ag_path in args.exclude:
             continue
-        ag = ActiGraphDataTable.from_file(ag_path, awake_ranges=awake_ranges)
+        ag = util.ActiGraphDataTable.from_file(ag_path,
+                                               awake_ranges=awake_ranges)
         if ag.raw_data.index.freq == Minute():
             ag.process()
         else:
@@ -187,11 +203,11 @@ if __name__ == '__main__':
     for soj_path in args.soj_path:
         if soj_path in args.exclude:
             continue
-        soj = SojournsData.from_file(soj_path, awake_ranges=awake_ranges)
+        soj = util.SojournsData.from_file(soj_path, awake_ranges=awake_ranges)
         soj.process()
         data.append(soj)
     for ap_path in args.ap_path:
-        ap = ActivPALData.from_file(ap_path)
+        ap = util.ActivPALData.from_file(ap_path)
         data.append(ap)
 
     plot_all_series(data)

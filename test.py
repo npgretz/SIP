@@ -1,7 +1,6 @@
 #!/usr/bin/env python2
 
-from StringIO import StringIO
-from pathlib import Path
+import StringIO
 import unittest
 
 import numpy as np
@@ -22,11 +21,12 @@ class TestCase(unittest.TestCase):
 class TestAwakeRanges(TestCase):
 
     def setUp(self):
-        self.in_csv = StringIO('"Sat, 02 Nov 2013 14:00:00 CDT -0500",'
-                                   '"Sun, 03 Nov 2013 01:30:00 CDT -0500"\n'
-                               '"Sun, 03 Nov 2013 01:15:00 CST -0600",'
-                                   '"Sun, 03 Nov 2013 03:00:00 CST -0600"\n')
-        self.out_csv = StringIO()
+        self.in_csv = StringIO.StringIO(
+            '"Sat, 02 Nov 2013 14:00:00 CDT -0500",'
+                '"Sun, 03 Nov 2013 01:30:00 CDT -0500"\n'
+            '"Sun, 03 Nov 2013 01:15:00 CST -0600",'
+                '"Sun, 03 Nov 2013 03:00:00 CST -0600"\n')
+        self.out_csv = StringIO.StringIO()
         self.data = pd.Series([True, False]*2, index=[
             pd.Timestamp(s).tz_convert(util.tz) for s
             in ['2013-11-02 14:00:00 -0500', '2013-11-03 01:30:00 -0500',
