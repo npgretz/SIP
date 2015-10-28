@@ -23,7 +23,6 @@ import functools as ft
 import operator as op
 from subprocess import Popen, check_call
 from pathlib import Path
-from optparse import OptionParser, Option, OptionValueError
 from collections import Iterable
 
 import numpy as np
@@ -87,20 +86,6 @@ def unique_everseen(iterable, key=None):
             if k not in seen:
                 seen_add(k)
                 yield element
-
-@export
-def patch_optparse():
-    if 'path' in Option.TYPES:
-        return
-
-    def check_path(option, opt, value):
-        try:
-            return Path(value)
-        except ValueError:
-            raise OptionValueError('option %s: invalid path value: %r' %
-                                   (opt, value))
-    Option.TYPES = Option.TYPES + ('path',)
-    Option.TYPE_CHECKER['path'] = check_path
 
 tz = 'America/Chicago'
 

@@ -20,7 +20,9 @@ from __future__ import print_function
 
 import itertools as it
 import operator as op
+import argparse
 from pathlib import Path
+import textwrap
 
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -56,13 +58,9 @@ def plot_all_series(data, eps=0.1):
         d.plot(dates[0], ax, interval)
     plt.show()
 
-def parse_options():
-    from optparse import OptionParser, OptionValueError, SUPPRESS_HELP
-    from textwrap import dedent
-    patch_optparse()
-
-    usage = 'Usage: %prog [options] [path/to/subject/directory]'
-    description = dedent("""
+def parse_arguments():
+    usage = '%(prog)s [options] [path/to/subject/directory]'
+    description = textwrap.dedent("""
     Display activity monitor data in an attractive format.
 
     Display each type of data differently:
@@ -116,68 +114,68 @@ def parse_options():
     pass it to the `--exclude` option.
 
     """)
-    epilog = dedent("""
+    epilog = textwrap.dedent("""
     You may specify the --soj-path, --ag-path, --ap-path and --exclude
     options as many times as you like; each file specified this way will be
     plotted or ignored as directed.
 
     """)
-    parser = OptionParser(description=description, epilog=epilog)
-    parser.add_option('--soj-path', type='path', action='append', default=[],
-                      help='Path to sojourns preprocessed Actigraph data')
-    parser.add_option('--ag-path', type='path', action='append', default=[],
-                      help='Path to Actigraph data')
-    parser.add_option('--ap-path', type='path', action='append', default=[],
-                      help='Path to activPAL Events data')
-    parser.add_option('--awake-path', type='path',
-                      help='Path to "awake ranges" file in case autodetection '
-                           'of non-wear time is poor')
-    parser.add_option('--ignore-awake-ranges', action='store_true',
-                      help='Flag to ignore "awake ranges" file')
-    parser.add_option('--no-raw-counts', action='store_true',
-                      help="Don't plot raw counts (for speed reasons)")
-    parser.add_option('-x', '--exclude', type='path', action='append',
-                      default=[],
-                      help="Don't plot the data in this file")
-    (opts, args) = parser.parse_args()
-    if args:
-        try:
-            path, = map(Path, args)
-        except ValueError:
-            path = None
-        else:
-            if not opts.ag_path:
-                opts.ag_path = filter(
-                    None, [ActiGraphDataTable.sniff(path, epoch=Minute()),
-                           ActiGraphDataTable.sniff(path, epoch=Second())])
-            if not opts.ap_path:
-                opts.ap_path = filter(None, [ActivPALData.sniff(path)])
-            if not opts.soj_path:
-                opts.soj_path = filter(None, [SojournsData.sniff(path)])
-            if not opts.awake_path:
-                opts.awake_path = AwakeRanges.sniff(path)
-    return opts
+
+    parser = argparse.ArgumentParser(
+        usage=usage, description=description, epilog=epilog,
+        formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument('subjdir', type=Path, nargs='?',
+                        help='search for subject data in this directory')
+    parser.add_argument('--soj-path', type=Path, action='append',
+                        help='get Sojourns/SIP preprocessed Actigraph data '
+                             'from this file')
+    parser.add_argument('--ag-path', type=Path, action='append',
+                        help='get Actigraph data from this file')
+    parser.add_argument('--ap-path', type=Path, action='append',
+                        help='get activPAL events data from this file')
+    parser.add_argument('--awake-path', type=Path,
+                        help='get wear time intervals from this file in case '
+                             'autodetection of non-wear time is poor')
+    parser.add_argument('--ignore-awake-ranges', action='store_true',
+                        help='ignore "awake ranges" file')
+    parser.add_argument('--no-raw-counts', action='store_true',
+                        help="don't plot raw counts (for speed reasons)")
+    parser.add_argument('-x', '--exclude', type=Path, action='append',
+                        help="don't plot the data in this file")
+    args = parser.parse_args()
+    if args.subjdir is not None:
+        if not args.ag_path:
+            args.ag_path = filter(
+                None, [ActiGraphDataTable.sniff(args.subjdir, epoch=Minute()),
+                       ActiGraphDataTable.sniff(args.subjdir, epoch=Second())])
+        if not args.ap_path:
+            args.ap_path = filter(None, [ActivPALData.sniff(args.subjdir)])
+        if not args.soj_path:
+            args.soj_path = filter(None, [SojournsData.sniff(args.subjdir)])
+        if not args.awake_path:
+            args.awake_path = AwakeRanges.sniff(args.subjdir)
+    return args
 
 if __name__ == '__main__':
-    opts = parse_options()
-    opts.exclude = set(opts.exclude)
+    args = parse_arguments()
+    args.exclude = set(args.exclude if args.exclude is not None else [])
     # FIXME
-    if opts.no_raw_counts:
+    if args.no_raw_counts:
         SojournsData.plot = SojournsData.plot_activities
 
     data = []
-    if opts.awake_path and opts.awake_path.exists():
-        awake_ranges = AwakeRanges.from_file(opts.awake_path)
+    if args.awake_path and args.awake_path.exists():
+        awake_ranges = AwakeRanges.from_file(args.awake_path)
     else:
         awake_ranges = None
     # FIXME de-hackify
-    print('ag_paths: [\n   ', '\n    '.join(map(str, opts.ag_path)), '\n]\n')
-    print('soj_paths: [\n   ', '\n    '.join(map(str, opts.soj_path)), '\n]\n')
-    print('ap_paths: [\n   ', '\n    '.join(map(str, opts.ap_path)), '\n]\n')
-    print('exclude: {\n   ', '\n    '.join(map(str, opts.exclude)), '\n}\n')
-    print('awake_path: %s' % opts.awake_path)
-    for ag_path in opts.ag_path:
-        if ag_path in opts.exclude:
+    print('ag_paths: [\n   ', '\n    '.join(map(str, args.ag_path)), '\n]\n')
+    print('soj_paths: [\n   ', '\n    '.join(map(str, args.soj_path)), '\n]\n')
+    print('ap_paths: [\n   ', '\n    '.join(map(str, args.ap_path)), '\n]\n')
+    print('exclude: {\n   ', '\n    '.join(map(str, args.exclude)), '\n}\n')
+    print('awake_path: %s' % args.awake_path)
+    for ag_path in args.ag_path:
+        if ag_path in args.exclude:
             continue
         ag = ActiGraphDataTable.from_file(ag_path, awake_ranges=awake_ranges)
         if ag.raw_data.index.freq == Minute():
@@ -186,13 +184,13 @@ if __name__ == '__main__':
             ag.raw_data['awake'] = ag.find_sleep()
             ag.data = ag.raw_data
         data.append(ag)
-    for soj_path in opts.soj_path:
-        if soj_path in opts.exclude:
+    for soj_path in args.soj_path:
+        if soj_path in args.exclude:
             continue
         soj = SojournsData.from_file(soj_path, awake_ranges=awake_ranges)
         soj.process()
         data.append(soj)
-    for ap_path in opts.ap_path:
+    for ap_path in args.ap_path:
         ap = ActivPALData.from_file(ap_path)
         data.append(ap)
 
