@@ -94,7 +94,7 @@ find it:
     # Don't change directories between the previous command and this one
     cat <<EOF >>~/.bashrc
     export SIP_DIR=$(printf %q "$PWD")/SIP
-    export PATH=$SIP_DIR${PATH:+:$PATH}
+    export PATH=\$SIP_DIR\${PATH:+:\$PATH}
     EOF
 
     cat <<'EOF' >>~/.bash_profile
