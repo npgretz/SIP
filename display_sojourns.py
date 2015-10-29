@@ -132,11 +132,14 @@ def parse_arguments():
     parser.add_argument('subjdir', type=pathlib.Path, nargs='?',
                         help='search for subject data in this directory')
     parser.add_argument('--soj-path', type=pathlib.Path, action='append',
+                        default=[],
                         help='get Sojourns/SIP preprocessed Actigraph data '
                              'from this file')
     parser.add_argument('--ag-path', type=pathlib.Path, action='append',
+                        default=[],
                         help='get Actigraph data from this file')
     parser.add_argument('--ap-path', type=pathlib.Path, action='append',
+                        default=[],
                         help='get activPAL events data from this file')
     parser.add_argument('--awake-path', type=pathlib.Path,
                         help='get wear time intervals from this file in case '
@@ -146,10 +149,12 @@ def parse_arguments():
     parser.add_argument('--no-raw-counts', action='store_true',
                         help="don't plot raw counts (for speed reasons)")
     parser.add_argument('-x', '--exclude', type=pathlib.Path, action='append',
+                        default=[],
                         help="don't plot the data in this file")
     parser.add_argument('--tz',
                         help='interpret data as being collected in this time '
-                             'zone instead of %r' % util.tz.zone)
+                             'zone instead of %r' %
+                                 getattr(util.tz, 'zone', util.tz))
     args = parser.parse_args()
     if args.tz is not None:
         util.tz = args.tz
@@ -170,6 +175,18 @@ def parse_arguments():
             args.awake_path = util.AwakeRanges.sniff(args.subjdir)
     if args.ignore_awake_ranges:
         args.awake_path = None
+    if not any([args.ag_path, args.ap_path, args.soj_path]):
+        if args.subjdir is not None:
+            if not args.subjdir.exists():
+                raise IOError("can't find subject directory %r" %
+                              str(args.subjdir))
+            elif not args.subjdir.is_dir():
+                raise IOError("subjdir %r isn't a directory" %
+                              str(args.subjdir))
+            raise IOError("can't find any data in subject directory %r" %
+                          str(args.subjdir))
+        parser.print_help()
+        parser.exit()
     return args
 
 if __name__ == '__main__':
@@ -208,6 +225,8 @@ if __name__ == '__main__':
         soj.process()
         data.append(soj)
     for ap_path in args.ap_path:
+        if ap_path in args.exclude:
+            continue
         ap = util.ActivPALData.from_file(ap_path)
         data.append(ap)
 

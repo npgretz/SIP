@@ -88,7 +88,10 @@ def unique_everseen(iterable, key=None):
                 seen_add(k)
                 yield element
 
+# Replace this if your data are consistently collected in a different time zone
+# from the one in which you're running SIP
 tz = tzlocal.get_localzone()
+# tz = pytz.timezone('America/Chicago')
 
 # ActiGraph cut points based on Freedson, 1998
 count_bins = [-np.inf, 0, 100, 760, 1952, 5725, np.inf]

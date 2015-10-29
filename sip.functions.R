@@ -1,6 +1,6 @@
 # sip.functions.R - estimate metabolic activity from accelerometer data
-# Copyright (C) 2014 John Staudenmayer
-#           (C) 2015 Isaac Schwabacher
+# Copyright (C) 2015 Isaac Schwabacher
+# modified from work (C) 2014 John Staudenmayer
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

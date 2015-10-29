@@ -346,6 +346,12 @@ def parse_arguments():
       This will always use the Sojourns/SIP file path with "_processed"
       added before the ".csv".
 
+    Because many of the summary measures refer to times of day, it's
+    important to provide the time zone in which the data were collected if
+    it's different from the system time zone of the computer doing the
+    processing. (Use the IANA time zone, like "America/Chicago", not the
+    ambiguous abbreviation like "CST", which could mean Cuba Standard Time.)
+
     """)    # TODO: summary measures
     parser = argparse.ArgumentParser(
         usage=usage, description=description,
@@ -377,7 +383,8 @@ def parse_arguments():
                              'estimate wear time anyway')
     parser.add_argument('--tz',
                         help='interpret data as being collected in this time '
-                             'zone instead of %r' % util.tz.zone)
+                             'zone instead of %r' %
+                                 getattr(util.tz, 'zone', util.tz))
     args = parser.parse_args()
     if args.tz is not None:
         util.tz = args.tz
@@ -394,6 +401,15 @@ def parse_arguments():
         if not args.awake_path:
             args.awake_path = util.AwakeRanges.sniff(args.subjdir)
     if not args.ag_path and not args.soj_path:
+        if args.subjdir is not None:
+            if not args.subjdir.exists():
+                raise IOError("can't find subject directory %r" %
+                              str(args.subjdir))
+            elif not args.subjdir.is_dir():
+                raise IOError("subjdir %r isn't a directory" %
+                              str(args.subjdir))
+            raise IOError("can't find any data in subject directory %r" %
+                          str(args.subjdir))
         parser.print_help()
         parser.exit()
     return args
