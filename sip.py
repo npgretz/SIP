@@ -308,7 +308,7 @@ def parse_arguments():
       information. This allows you to account for instances when the subject
       fell asleep while wearing the monitor, for instance.
 
-      Example file name: "24601/ActiGraph/JV_awake ranges.csv"
+      Example file name: "24601/ActiGraph/JV awake ranges.csv"
 
       (You must quote this file name on the command line because it contains
       a space.)

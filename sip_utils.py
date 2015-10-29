@@ -310,8 +310,8 @@ class AwakeRanges(Sniffable):
             pd.Timestamp(re.sub(' [A-Z]+ ', ' ', s)).tz_convert(tz)
             for s in temp.values.flat])
         if not idx.is_monotonic:
-            raise ValueError("Times in awake ranges file aren't strictly "
-                             'increasing!')
+            raise ValueError('Times in "awake ranges" file '
+                             "aren't strictly increasing!")
         return cls(pd.Series([True, False]*(len(idx)//2), index=idx))
 
     @classmethod
@@ -323,12 +323,12 @@ class AwakeRanges(Sniffable):
 
     @staticmethod
     def search_path():
-        return ['ActiGraph/*awake ranges_QC.csv',
-                'activPAL/*awake ranges_QC.csv',
-                '*awake ranges_QC.csv',
-                'ActiGraph/*awake ranges.csv',
-                'activPAL/*awake ranges.csv',
-                '*awake ranges.csv']
+        return ['ActiGraph/* awake ranges_QC.csv',
+                'activPAL/* awake ranges_QC.csv',
+                '* awake ranges_QC.csv',
+                'ActiGraph/* awake ranges.csv',
+                'activPAL/* awake ranges.csv',
+                '* awake ranges.csv']
 
 @export
 class ActivityMonitorData(Sniffable):
