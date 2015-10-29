@@ -105,6 +105,10 @@ find it:
 
     . ~/.bashrc
 
+(You should only run this once, since its job is to add a few lines to your
+startup scripts that will run every time you open a terminal. Running it more
+than once *might* break things, but it's probably harmless.)
+
 And you're done!
 
 As long as you don't modify any of the files in the SIP directory, in the event
