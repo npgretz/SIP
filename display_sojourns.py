@@ -109,7 +109,7 @@ def parse_arguments():
     will be shifted to fit.
 
     Files are selected in the same way as in sip.py; for more detail, see
-    the help for that playing. The exception to this is that this program
+    the help for that program. The exception to this is that this program
     will select as many files as it can find rather than ending its search
     when it finds an appropriate file (but files with names ending in "_QC"
     will still shadow files with identical names that are missing this
