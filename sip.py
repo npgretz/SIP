@@ -135,47 +135,47 @@ class ActivitySummary(util.Sniffable):
         hours = range(24)
         dtypes = [('subject', 'O'),
                   ('day', 'O'),
-                  ('min_awake', 'f64'),
+                  ('min_awake', 'f8'),
                   ('sleep_ranges', 'O'),
-                  ('total_counts', 'i64'),
-                  ('counts_per_min', 'f64'),
-                  ('min_sedentary', 'f64'),
-                  ('sedentary_periods', 'i64'),
-                  ('mean_sedentary_len', 'f64'),
-                  ('median_sedentary_len', 'f64'),
-                  ('active_periods', 'i64'),
-                  ('mean_active_len', 'f64'),
-                  ('median_active_len', 'f64')]
-        dtypes.extend([('min_%s' % act, 'f64') for act in
+                  ('total_counts', 'i8'),
+                  ('counts_per_min', 'f8'),
+                  ('min_sedentary', 'f8'),
+                  ('sedentary_periods', 'i8'),
+                  ('mean_sedentary_len', 'f8'),
+                  ('median_sedentary_len', 'f8'),
+                  ('active_periods', 'i8'),
+                  ('mean_active_len', 'f8'),
+                  ('median_active_len', 'f8')]
+        dtypes.extend([('min_%s' % act, 'f8') for act in
                        'active light adl freedson matthews vigorous'.split()])
-        dtypes.extend([('median_active_intensity', 'i64'),
-                       ('min_pa_recommendation', 'f64'),
-                       ('pa_recommendation_periods', 'i64')])
-        dtypes.extend([('%s_length_%d' % (act, dur), 'f64') for act in
+        dtypes.extend([('median_active_intensity', 'i8'),
+                       ('min_pa_recommendation', 'f8'),
+                       ('pa_recommendation_periods', 'i8')])
+        dtypes.extend([('%s_length_%d' % (act, dur), 'f8') for act in
                        'sedentary light adl freedson matthews vigorous'.split()
                        for dur in durs])
-        dtypes.extend([('%s_circadian_%d' % (act, hour), 'f64') for act in
+        dtypes.extend([('%s_circadian_%d' % (act, hour), 'f8') for act in
                        'sedentary light adl freedson matthews vigorous'
                        '    awake'.split()
                        for hour in hours])
-        dtypes.extend([('%s_circadian_%d_length_%d' % (act, hour, dur), 'f64')
+        dtypes.extend([('%s_circadian_%d_length_%d' % (act, hour, dur), 'f8')
                        for act in 'sedentary'.split()
                        for dur in durs for hour in hours])
-        dtypes.append(('break_rate', 'f64'))
-        dtypes.extend([('min_%s' % act, 'f64') for act in
+        dtypes.append(('break_rate', 'f8'))
+        dtypes.extend([('min_%s' % act, 'f8') for act in
                        'standing sitting_active'.split()])
-        dtypes.extend([('%s_length_%d' % (act, dur), 'f64') for act in
+        dtypes.extend([('%s_length_%d' % (act, dur), 'f8') for act in
                        'standing sitting_active'.split() for dur in durs])
-        dtypes.extend([('%s_circadian_%d' % (act, hour), 'f64') for act in
+        dtypes.extend([('%s_circadian_%d' % (act, hour), 'f8') for act in
                        'standing sitting_active'.split() for hour in hours])
-        dtypes.append(('min_valid', 'f64'))
-        dtypes.extend([('valid_circadian_%d' % hour, 'f64') for hour in hours])
-        dtypes.extend([('min_%s' % act, 'f64') for act in
+        dtypes.append(('min_valid', 'f8'))
+        dtypes.extend([('valid_circadian_%d' % hour, 'f8') for hour in hours])
+        dtypes.extend([('min_%s' % act, 'f8') for act in
                        'adl_apsed freedson_apsed vigorous_apsed'.split()])
-        dtypes.append(('min_error', 'f64'))
-        dtypes.extend([('min_%s_and_pa_recommendation' % act, 'f64') for act in
+        dtypes.append(('min_error', 'f8'))
+        dtypes.extend([('min_%s_and_pa_recommendation' % act, 'f8') for act in
                        'adl freedson vigorous'.split()])
-        dtypes.extend([('%s_steps' % meth, 'i64') for meth in ('AG', 'AP')])
+        dtypes.extend([('%s_steps' % meth, 'i8') for meth in ('AG', 'AP')])
         return pd.DataFrame(np.zeros(0, dtype=dtypes))
 
     @staticmethod
