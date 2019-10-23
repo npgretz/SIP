@@ -33,20 +33,23 @@ Copy and paste the code below into your `CMD` terminal and then hit `enter` to r
 ###For Windows (Search for "cmd" in the start menu to open a terminal)   
 mkdir C:\Activity_Monitor_Processing\Data\subject_0001_example_file\subj_0001_Session_1
 ```     
-Keep your 1secDataTable.csv files in the `\Data` directory. Then separate them by subject ID and within subject ID by each subject's individual sessions.   
+Keep your 1secDataTable.csv files in the `\Data\subject_0001\0001_session_1\` directory so they are separated by subject ID and within subject ID by each subject's individual sessions.   
          
-2. Download and Extract the `SIP-master.zip` file from [SIP-master](https://www.github.com/ischwabacher/SIP/archive/master.zip).        
+2. Download and Extract the `SIP-master.zip` file from [SIP-master](https://www.github.com/ischwabacher/SIP/archive/master.zip). "Extract all" into the file tree you created above. "C:\Activity_Monitor_Processing\SIP-master" should be where the extracted file is located.        
+The `SIP-master.zip` file will likely be in your `Downloads` folder if you clicked the `SIP-master` link above.         
 
-3. `SIP-master.zip` will have inside of it another file, `SIP-master`. Copy this file into the `Activity_Monitor_Processing` directory. The `SIP-master.zip` file will likely be in your `Downloads` folder if you clicked the `SIP-master` link above. The `Activity_Monitor_Processing` directory will listed under the`C:\` drive.   
+4. Set your PATH to include the `SIP-master` file so your computer knows where to find `SIP.py`:      
+The "Path" is a list of programs that your computer can find and use when you give the computer an instruction in the `cmd` terminal. We must add Python, R, and SIP-master to the Path so that the computer can find and run them.    
 
-4. Set your PATH to include the `SIP-master` file so your computer knows where to find `SIP.py`:    
+Run the code below, one line at a time to set the Path to include Python, R, and SIP-master. Remember to change the code below if you created the Activity_Monitor_Processing file somewhere besides "C:\Activity_Monitor_Processing".          
+
 ```{bash eval=FALSE}
 ###For Windows (Search for "cmd" in the start menu to open a terminal)   
 setx SIP_DIR "C:\Activity_Monitor_Processing\SIP-master"   
 setx DATA_DIR "C:\Activity_Monitor_Processing\Data"   
 setx PATH PATH;%SIP_DIR%;C:\Python27;C:\Python27\Scripts;"C:\Program Files\R\R-3.6.1\bin"  
-```   
-For changes to the PATH to take effect you must restart your current `cmd` `terminal`.    
+```       
+For changes to the PATH to take effect you must exit and restart your current `cmd` `terminal`.                         
 
 
 
@@ -58,29 +61,43 @@ For changes to the PATH to take effect you must restart your current `cmd` `term
 If you already use Python2.x for other scripts, then consider looking into an environment manager such as [Anaconda](https://www.anaconda.com/distribution/) so you can maintain concurrent environments for different scripts. I will note, I have been unable to get `SIP.py` or `display_sojourns.py` running in [Miniconda for Python 2.7](https://docs.conda.io/en/latest/miniconda.html).     
 
 2. Install Required Python Packages      
-In a `CMD` terminal, run:       
+To install Python packages that SIP uses, run the code below. In the code below every string that comes before "==" is a package name. You will see yellow and red warnings but you can ignore these unless the packages are not successfully installed. We will check this next but first in a `CMD` terminal, run:       
 ```{bash eval=FALSE}
 python -m pip install numpy==1.12.0 matplotlib==2.2.3 nose==1.3.4 pathlib==1.0 tornado==3.1.1 tzlocal==2.0.0 pandas==0.19.2 
 ```       
-3. Set Python as the default program for files with extensions ".py"       
+
+Check all of the above packages were successfully installed by running:       
+```{bash eval=FALSE}
+python -m pip freeze
+```       
+If you do not see all of the packages listed, then try removing the packages you did see listed and the "==[numbers]" from the `python -m pip install` code above.        
+
+
+3. Set Python as the default program for files with extensions ".py":      
+This will not work if you are not an admin and in some cases if you are an admin so read the paragraph after this code chunk.     
 ```{bash eval=FALSE}
 ftype Python.File="C:\Python27\python.exe" "%1"
 assoc .py=Python.File
 ```          
-You need to be logged into an Admin account to run these commands. If you cannot access an Admin account then this can be done through navigating to "C:\Activity_Monitor_Processing\SIP-master" and then right-clicking on `sip.py` (likely will show as only `sip`). For Windows 7, hover over "Open With" and then go to "Choose Default Program...". Here select "Browse" and then navigate to "C:\Python27". In that directory, select `python.exe`. In Windows 10, click on "Open with..." and then check the box for "Always use this app to open .py files". Then select "More apps". Select "Browse" and navigate to "C:\Python27". In that directory, select `python.exe`.           
+You need to be logged into an Admin account to run these commands. If you cannot access an Admin account then this can be done in "File Explorer" by opening "C:\Activity_Monitor_Processing\SIP-master" and then right-clicking on `sip.py` (likely will show as only `sip`). In Windows 10, click on "Open with..." and then **check the box for "Always use this app to open .py files"**. Then select "More apps". Select "Browse" and navigate to "C:\Python27". In that directory, select `python.exe`. For Windows 7, hover over "Open With" and then go to "Choose Default Program...". Here select "Browse" and then navigate to "C:\Python27". In that directory, select `python.exe`. There will be two `python.exe`s. The `pythonw.exe` will run without showing the screen output so use `python.exe` without the "w".                               
 
 
 ## Installing R
-`Sojourns` uses `R` for its classifcation of activity data. You can install any 3.x.x verison of `R` and it should be compatable with `SIP`.       
+`Sojourns` uses `R` for its classifcation of activity data. You can install any 3.x.x verison of `R` and it should be compatable with `SIP` as long as you are able to install the "zoo" and "nnet" packages in that version. If you have `R` already installed, check the version by running:        
+```{bash eval=FALSE}
+R --vanilla
+q() 
+```       
+In the first lines you should see "R-X.X.X" for your verison number.         
 
 1. Download and Install [R 3.6.1](https://cran.r-project.org/bin/windows/base/R-3.6.1-win.exe)       
 If you install or already have installed a verison of R that is not 3.6.1 then you will have to adjust the last line of code in the "Installing SIP" section 4 to the correct version number. Change "C:\Program Files\R\R-3.6.1\bin"  to the correct \R-x.x.x\bin.    
 
-2. Open a `CMD` terminal and run `R` by typing:      
+2. Open a `CMD` terminal and run `R` by copying the code below. If this does not work read the paragraph below this chunk.            
 ```{bash eval=FALSE}
 R --vanilla
 ```       
-If this command is not known by the computer, then you must adjust your path to make sure your version of `R` is included on your computer's `PATH`. In the "Installing SIP" section 4, this code is used to set your version of `R` to the path:      
+If this command is not known by the computer, then you must adjust your path to make sure your version of `R` is included on your computer's `PATH`. In the "Installing SIP" section 4, this code is used to set your version of `R` to the `PATH` and then close and restart your `cmd` terminal:      
 ```{bash eval=FALSE}
 ###For Windows (Search for "cmd" in the start menu to open a terminal)   
 setx PATH PATH;"C:\Program Files\R\R-3.6.1\bin"  
@@ -90,8 +107,8 @@ Confirm version 3.6.1 is your version of `R` or adjust the code above to your co
 3. Install `R` packages "zoo" and "nnet"      
 once `R` is open in your `terminal` run these commands:      
 ```{bash eval=FALSE}
-install.packages("nnet")
-install.packages("zoo")
+install.packages("nnet", repos='http://cloud.r-project.org/')
+install.packages("zoo", repos='http://cloud.r-project.org/')
 q()
 ```         
 
@@ -106,21 +123,21 @@ sip.py
 1. Run SIP on sample 1secDataTable files:    
 ```{bash eval=FALSE}
 ###For Windows (Search for "cmd" in the start menu to open a terminal)    
-sip.py %SIP_DIR%\sampledata\ActiGraph
-display_sojourns.py %SIP_DIR%\sampledata\ActiGraph
+sip.py "%SIP_DIR%\sampledata"
+display_sojourns.py "%SIP_DIR%\sampledata"
 ```     
 
 2. To run SIP on your participants data saved in the file tree created above:      
 ```{bash eval=FALSE}
 ###For Windows (Search for "cmd" in the start menu to open a terminal)    
-sip.py %DATA_DIR%\subject_0001_example_file\subj_0001_Session_1
+sip.py "%DATA_DIR%\subject_0001_example_file\subj_0001_Session_1"
 ```     
 Simply, save your participants' data following the example file and then sip.py on the file for the participant that corresponds to the "subj_0001_Session_1" file. This file should have a "1secDataTable.csv" file that was created by exporting an `.AGD` file from ActiLife. If the exported Data Table CSV file is named as "1sec.csv" because you have a newer version of ActiLife, then you must rename the file to end with "1secDataTable.csv" so `SIP.py` can locate the file.
 
 3. Run Display_Sojourns.py:     
 ```{bash eval=FALSE}
 ###For Windows (Search for "cmd" in the start menu to open a terminal)    
-display_sojourns.py %DATA_DIR%\subject_0001_example_file\subj_0001_Session_1
+display_sojourns.py "%DATA_DIR%\subject_0001_example_file\subj_0001_Session_1"
 ```     
 
 
