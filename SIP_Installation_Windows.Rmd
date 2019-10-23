@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 ## Windows Command Prompt    
 This installation will use Windows Command Prompt (`cmd`) for consistency and also because it will be required for running SIP on activity files. Many online resources can be found with a quick Google search if you get stuck while using `cmd`.    
-The first step to using `cmd` is to open a Command Prompt by searching "cmd" in the Start Menu's search bar. The result should be a black box with a flashing cursor. Basic `cmd` commands are:     
+The first step to using `cmd` is to open a Command Prompt by searching "cmd" in the Start Menu's search bar. The result should be a black box with a flashing cursor. To run commands in `cmd`, tye your command on the line and then hit enter. For this guide, copy and paste one line of code at a time and then hit `enter` before copying the next line of code to the `cmd` terminal. Basic `cmd` commands are:     
 ```{bash eval=FALSE}
 cd C:\file\path     
 #changes the current directory of the prompt
@@ -23,13 +23,19 @@ M:
 ```     
 
 ## Installing SIP   
-1. Download and Extract the `SIP-master.zip` file from [SIP-master](https://www.github.com/ischwabacher/SIP/archive/master.zip).        
-2. Create a file tree for your activity monitoring processing:   
+1. Create a file tree for your activity monitoring processing:       
+A file tree is simply your structure for the directories that will store your data. If the code below is copied into your Window's `CMD` terminal and then run with `enter`, it will create a "Activity_Monitor_Processing" directory on your computer's `C` drive. Inside of this directory, a "Data" directory is created, as well. In this directories you will store a directory for every participant. Inside of each participant's directory, you can create a directory for each timepoint that you had your participant wear an ActiGraph monitor for. If you only have each participant wear an ActiGraph at one timepoint then you can just store your participants data in a directory inside "Data". The main goal here is to have only one "1secDataTable.csv" file in each directory. If there are mutliple in the same directory, then `SIP` will not know which one to process.     
+
+If you need to keep your participant data stored on an encrypted, password protected server that your computer is already connected to, then open "File Explorer" and find out which letter of drive corresponds to the drive you wish to store your participant data on. Replace the "C" in "C:\" of the code below with the letter of the drive for this code and all future code chunks that you run.          
+
+Copy and paste the code below into your `CMD` terminal and then hit `enter` to run the code and create your file tree.       
 ```{bash eval=FALSE}
 ###For Windows (Search for "cmd" in the start menu to open a terminal)   
 mkdir C:\Activity_Monitor_Processing\Data\subject_0001_example_file\subj_0001_Session_1
 ```     
-Keep your 1secDataTable.csv files in the `\Data` directory. Then separate them by subject ID and within subject ID by each subject's individual sessions.  
+Keep your 1secDataTable.csv files in the `\Data` directory. Then separate them by subject ID and within subject ID by each subject's individual sessions.   
+         
+2. Download and Extract the `SIP-master.zip` file from [SIP-master](https://www.github.com/ischwabacher/SIP/archive/master.zip).        
 
 3. `SIP-master.zip` will have inside of it another file, `SIP-master`. Copy this file into the `Activity_Monitor_Processing` directory. The `SIP-master.zip` file will likely be in your `Downloads` folder if you clicked the `SIP-master` link above. The `Activity_Monitor_Processing` directory will listed under the`C:\` drive.   
 
