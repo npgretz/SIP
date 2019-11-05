@@ -54,16 +54,16 @@ For changes to the PATH to take effect you must exit and restart your current `c
 
 
 ## Install Python      
-`Sojourns` requires the older Python2.7 and older versions of certain packages. Make sure you download and install a version of python from [Python.org](https://www.python.org/downloads/) that begins with "2.7". 
-          
+`Sojourns` requires the older Python2.7 and older versions of certain packages. Make sure you download and install a version of python from [Python.org](https://www.python.org/downloads/) that begins with "2.7".     
+         
 1. Install Python        
-[Python 2.7.17](https://www.python.org/ftp/python/2.7.17/python-2.7.17.amd64.msi)                
-If you already use Python2.x for other scripts, then consider looking into an environment manager such as [Anaconda](https://www.anaconda.com/distribution/) so you can maintain concurrent environments for different scripts. I will note, I have been unable to get `SIP.py` or `display_sojourns.py` running in [Miniconda for Python 2.7](https://docs.conda.io/en/latest/miniconda.html).     
+[Python 2.7.9](https://www.python.org/ftp/python/2.7.9/python-2.7.9.amd64.msi)                
+If you already use Python2.7.x for other scripts, then consider looking into an environment manager such as [Anaconda](https://www.anaconda.com/distribution/) so you can maintain concurrent environments for different scripts. I will note, I have been unable to get `SIP.py` or `display_sojourns.py` running in [Miniconda for Python 2.7](https://docs.conda.io/en/latest/miniconda.html).     
 
 2. Install Required Python Packages      
 To install Python packages that SIP uses, run the code below. In the code below every string that comes before "==" is a package name. You will see yellow and red warnings but you can ignore these unless the packages are not successfully installed. We will check this next but first in a `CMD` terminal, run:       
 ```{bash eval=FALSE}
-python -m pip install numpy==1.12.0 matplotlib==2.2.3 nose==1.3.4 pathlib==1.0 tornado==3.1.1 tzlocal==2.0.0 pandas==0.19.2 
+python -m pip install numpy==1.11.0 matplotlib==1.5.1 nose==1.3.4 tornado==3.1.1 tzlocal==1.2 pandas==0.18.1 
 ```       
 
 Check all of the above packages were successfully installed by running:       

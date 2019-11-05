@@ -398,9 +398,7 @@ mkdir C:\Activity_Monitor_Processing\Data\subject_0001_example_file\subj_0001_Se
 <li><p>Set your PATH to include the <code>SIP-master</code> file so your computer knows where to find <code>SIP.py</code>:</p></li>
 </ol>
 <pre class="bash"><code>###For Windows (Search for &quot;cmd&quot; in the start menu to open a terminal)   
-setx SIP_DIR &quot;C:\Activity_Monitor_Processing\SIP-master&quot;   
-setx DATA_DIR &quot;C:\Activity_Monitor_Processing\Data&quot;   
-setx PATH PATH;%SIP_DIR%;C:\Python27;C:\Python27\Scripts;&quot;C:\Program Files\R\R-3.6.1\bin&quot;  </code></pre>
+setx PATH PATH;&quot;C:\Activity_Monitor_Processing\SIP-master&quot;;C:\Python27;C:\Python27\Scripts;&quot;C:\Program Files\R\R-3.6.1\bin&quot;  </code></pre>
 <p>For changes to the PATH to take effect you must restart your current <code>cmd</code> <code>terminal</code>.</p>
 </div>
 <div id="install-python" class="section level2">
@@ -408,12 +406,12 @@ setx PATH PATH;%SIP_DIR%;C:\Python27;C:\Python27\Scripts;&quot;C:\Program Files\
 <p><code>Sojourns</code> requires the older Python2.7 and older versions of certain packages. Make sure you download and install a version of python from <a href="https://www.python.org/downloads/">Python.org</a> that begins with “2.7”.</p>
 <ol style="list-style-type: decimal">
 <li><p>Install Python<br />
-<a href="https://www.python.org/ftp/python/2.7.17/python-2.7.17.amd64.msi">Python 2.7.17</a><br />
+<a href="https://www.python.org/ftp/python/2.7.9/python-2.7.9.amd64.msi">Python 2.7.9</a><br />
 If you already use Python2.x for other scripts, then consider looking into an environment manager such as <a href="https://www.anaconda.com/distribution/">Anaconda</a> so you can maintain concurrent environments for different scripts. I will note, I have been unable to get <code>SIP.py</code> or <code>display_sojourns.py</code> running in <a href="https://docs.conda.io/en/latest/miniconda.html">Miniconda for Python 2.7</a>.</p></li>
 <li><p>Install Required Python Packages<br />
 In a <code>CMD</code> terminal, run:</p></li>
 </ol>
-<pre class="bash"><code>python -m pip install numpy==1.12.0 matplotlib==2.2.3 nose==1.3.4 pathlib==1.0 tornado==3.1.1 tzlocal==2.0.0 pandas==0.19.2 </code></pre>
+<pre class="bash"><code>python -m pip install numpy==1.11.0 matplotlib==1.5.1 nose==1.3.4 pathlib==1.0 tornado==3.1.1 tzlocal==1.2 pandas==0.18.1 </code></pre>
 <ol start="3" style="list-style-type: decimal">
 <li>Set Python as the default program for files with extensions “.py”</li>
 </ol>
@@ -451,19 +449,19 @@ sip.py </code></pre>
 <li>Run SIP on sample 1secDataTable files:</li>
 </ol>
 <pre class="bash"><code>###For Windows (Search for &quot;cmd&quot; in the start menu to open a terminal)    
-sip.py %SIP_DIR%\sampledata\ActiGaph
-display_sojourns.py %SIP_DIR%\sampledata\ActiGaph</code></pre>
+sip.py C:\Activity_Monitor_Processing\SIP-master\sampledata\ActiGraph
+display_sojourns.py C:\Activity_Monitor_Processing\SIP-master\sampledata\ActiGraph</code></pre>
 <ol start="2" style="list-style-type: decimal">
 <li>To run SIP on your participants data saved in the file tree created above:</li>
 </ol>
 <pre class="bash"><code>###For Windows (Search for &quot;cmd&quot; in the start menu to open a terminal)    
-sip.py %DATA_DIR%\subject_0001_example_file\subj_0001_Session_1</code></pre>
+sip.py C:\Activity_Monitor_Processing\Data\subject_0001_example_file\subj_0001_Session_1</code></pre>
 <p>Simply, save your participants’ data following the example file and then sip.py on the file for the participant that corresponds to the “subj_0001_Session_1” file. This file should have a “1secDataTable.csv” file that was created by exporting an <code>.AGD</code> file from ActiLife. If the exported Data Table CSV file is named as “1sec.csv” because you have a newer version of ActiLife, then you must rename the file to end with “1secDataTable.csv” so <code>SIP.py</code> can locate the file.</p>
 <ol start="3" style="list-style-type: decimal">
 <li>Run Display_Sojourns.py:</li>
 </ol>
 <pre class="bash"><code>###For Windows (Search for &quot;cmd&quot; in the start menu to open a terminal)    
-display_sojourns.py %DATA_DIR%\subject_0001_example_file\subj_0001_Session_1</code></pre>
+display_sojourns.py C:\Activity_Monitor_Processing\Data\subject_0001_example_file\subj_0001_Session_1</code></pre>
 <div id="help-and-troubleshooting" class="section level3">
 <h3>HELP AND TROUBLESHOOTING</h3>
 <p>Please contact Nick Gretzon at <a href="mailto:gretzon@wisc.edu" class="email">gretzon@wisc.edu</a> if you have problems getting your <code>SIP.py</code> set up running!</p>
